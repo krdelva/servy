@@ -3,12 +3,16 @@ defmodule Servy.SharkController do
   alias Servy.Wildthings
 
   def index(conv) do
-    sharks = Wildthings.list_sharks()
+    items =
+      Wildthings.list_sharks()
+      |> Enum.filter(fn s -> s.type == "Tiger" end)
+      |> Enum.sort(fn s1, s2 -> s1.name <= s2.name end)
+      |> Enum.map(fn s -> "<li>#{s.name} - #{s.type}</li>" end)
+      |> Enum.join
 
-    response = "<ul>" <> Enum.map(sharks, &("<li>" <> &1.name <> "</li> ")) <> "</ul>"
     # TODO: Transofrm sharks to an HTML list.
 
-    %{conv | status: 200, resp_body: response}
+    %{conv | status: 200, resp_body: "<ul>#{items}</ul>" }
   end
 
   def show(conv, %{"id" => id}) do
