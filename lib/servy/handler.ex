@@ -42,6 +42,11 @@ defmodule Servy.Handler do
     %{ conv | status: 200, resp_body: "DELETE" }
   end
 
+  # name=Cat&type=Calm
+  def route(%Conv{ method: "POST", path: "/sharks"} = conv) do
+    %{ conv | status: 201, resp_body: "Created a #{ conv.params["type"]} shark named #{conv.params["name"] }!" }
+  end
+
   def route(%Conv{ method: "GET", path: "/about" } = conv) do
     # File.read(__DIR__ <> "/../../pages/about.html")
     #file =
@@ -142,6 +147,20 @@ Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
 
+"""
+
+IO.puts Servy.Handler.handle(request)
+
+
+request = """
+POST /sharks HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+Content-Type: application/x-www-form-urlenconded
+Content-Length: 21
+
+name=Cat&type=Calm
 """
 
 IO.puts Servy.Handler.handle(request)
