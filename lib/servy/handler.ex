@@ -1,10 +1,10 @@
 defmodule Servy.Handler do
-
   @moduledoc """
     Handles HTTP requests.
   """
 
   alias Servy.Conv
+  alias Servy.SharkController
 
   import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
   import Servy.Parser, only: [parse: 1]
@@ -23,58 +23,55 @@ defmodule Servy.Handler do
     |> format_response
   end
 
-
   # def route(conv), do: route(conv, conv.method, conv.path)
 
-  def route(%Conv{ method: "GET", path: "/wildthings"} = conv) do
-    %{ conv | status: 200, resp_body: "Bears, Lions, Tigers"}
+  def route(%Conv{method: "GET", path: "/wildthings"} = conv) do
+    %{conv | status: 200, resp_body: "Bears, Lions, Tigers"}
   end
 
-  def route(%Conv{ method: "GET", path: "/sharks" } = conv) do
-    %{ conv | status: 200, resp_body: "Great White, Tiger, Hammer"}
+  def route(%Conv{method: "GET", path: "/sharks"} = conv) do
+    SharkController.index(conv)
   end
 
-  def route(%Conv{ method: "GET", path: "/sharks/" <> id } = conv) do
-    %{ conv | status: 200, resp_body: "Shark #{id}"}
+  def route(%Conv{method: "GET", path: "/sharks/" <> id} = conv) do
+    params = Map.put(conv.params, "id", id)
+    SharkController.show(conv, params)
   end
 
-  def route(%Conv{ method: "DELETE", path: "/sharks/" <> _id } = conv) do
-    %{ conv | status: 200, resp_body: "DELETE" }
+  def route(%Conv{method: "DELETE", path: "/sharks/" <> _id} = conv) do
+    %{conv | status: 200, resp_body: "DELETE"}
   end
 
   # name=Cat&type=Calm
-  def route(%Conv{ method: "POST", path: "/sharks"} = conv) do
-    %{ conv | status: 201, resp_body: "Created a #{ conv.params["type"]} shark named #{conv.params["name"] }!" }
+  def route(%Conv{method: "POST", path: "/sharks"} = conv) do
+    SharkController.create(conv, conv.params)
   end
 
-  def route(%Conv{ method: "GET", path: "/about" } = conv) do
+  def route(%Conv{method: "GET", path: "/about"} = conv) do
     # File.read(__DIR__ <> "/../../pages/about.html")
-    #file =
-      @pages_path
-      |> Path.join("about.html")
-      |> File.read
-      |> handle_file(conv)
-  end
-
-  def route(%Conv{ method: "GET", path: "/sharks/new" } = conv) do
+    # file =
     @pages_path
-    |> Path.join("form.html")
-    |> File.read
+    |> Path.join("about.html")
+    |> File.read()
     |> handle_file(conv)
   end
 
-    # case File.read(file) do
-    #   {:ok, content} -> %{ conv | status: 200, resp_body: content}
-    #   {:error, :enoent} -> %{ conv | status: 404, resp_body: "File not found!!!"}
-    #   {:error, reason} -> %{ conv | status: 500, resp_body: "File error: #{reason}"}
-    # end
-
-  def route(%Conv{ path: path } = conv) do
-    %{ conv | status: 404, resp_body: "No #{path} here!"}
+  def route(%Conv{method: "GET", path: "/sharks/new"} = conv) do
+    @pages_path
+    |> Path.join("form.html")
+    |> File.read()
+    |> handle_file(conv)
   end
 
+  # case File.read(file) do
+  #   {:ok, content} -> %{ conv | status: 200, resp_body: content}
+  #   {:error, :enoent} -> %{ conv | status: 404, resp_body: "File not found!!!"}
+  #   {:error, reason} -> %{ conv | status: 500, resp_body: "File error: #{reason}"}
+  # end
 
-
+  def route(%Conv{path: path} = conv) do
+    %{conv | status: 404, resp_body: "No #{path} here!"}
+  end
 
   def format_response(%Conv{} = conv) do
     """
@@ -85,11 +82,7 @@ defmodule Servy.Handler do
     #{conv.resp_body}
     """
   end
-
-
-
 end
-
 
 request = """
 GET /wildthings HTTP/1.1
@@ -99,7 +92,7 @@ Accept: */*
 
 """
 
-IO.puts Servy.Handler.handle(request)
+IO.puts(Servy.Handler.handle(request))
 
 request = """
 GET /wildlife HTTP/1.1
@@ -109,7 +102,7 @@ Accept: */*
 
 """
 
-IO.puts Servy.Handler.handle(request)
+IO.puts(Servy.Handler.handle(request))
 
 request = """
 GET /sharks HTTP/1.1
@@ -119,7 +112,7 @@ Accept: */*
 
 """
 
-IO.puts Servy.Handler.handle(request)
+IO.puts(Servy.Handler.handle(request))
 
 request = """
 GET /sharks1 HTTP/1.1
@@ -129,7 +122,7 @@ Accept: */*
 
 """
 
-IO.puts Servy.Handler.handle(request)
+IO.puts(Servy.Handler.handle(request))
 
 request = """
 GET /about HTTP/1.1
@@ -139,7 +132,7 @@ Accept: */*
 
 """
 
-IO.puts Servy.Handler.handle(request)
+IO.puts(Servy.Handler.handle(request))
 
 request = """
 GET /sharks/new HTTP/1.1
@@ -149,8 +142,7 @@ Accept: */*
 
 """
 
-IO.puts Servy.Handler.handle(request)
-
+IO.puts(Servy.Handler.handle(request))
 
 request = """
 POST /sharks HTTP/1.1
@@ -163,4 +155,4 @@ Content-Length: 21
 name=Cat&type=Calm
 """
 
-IO.puts Servy.Handler.handle(request)
+IO.puts(Servy.Handler.handle(request))
