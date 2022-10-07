@@ -13,4 +13,20 @@ defmodule Servy.Wildthings do
     ]
   end
 
+  def get_shark(id) when is_integer(id) do
+    Enum.find(list_sharks(), &(&1.id == id))
+  end
+
+  def get_shark(id) when is_binary(id) do
+    id |> String.to_integer() |> get_shark
+  end
+
+  def match_shark?(id1, id2) when is_integer(id1) do
+    id1 != id2
+  end
+
+  def match_shark?(id1, id2) when is_binary(id1) do
+    id1 |> String.to_integer() |> match_shark?(id2)
+  end
+
 end
