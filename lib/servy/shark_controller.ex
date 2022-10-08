@@ -3,6 +3,8 @@ defmodule Servy.SharkController do
   alias Servy.Wildthings
   alias Servy.Shark
 
+  # @templates_path Path.expand("../../templates", __DIR__)
+
   defp shark_item(shark) do
     "<li>#{shark.name} - #{shark.type}</li>"
   end
@@ -14,8 +16,6 @@ defmodule Servy.SharkController do
       |> Enum.sort(&Shark.order_ascending_by_name/2)
       |> Enum.map(&shark_item/1)
       |> Enum.join
-
-    # TODO: Transofrm sharks to an HTML list.
 
     %{conv | status: 200, resp_body: "<ul>#{items}</ul>" }
   end
@@ -31,18 +31,13 @@ defmodule Servy.SharkController do
   end
 
   def delete(conv, %{"id" => id}) do
-    IO.puts "ID: " <> id
-
-    IO.inspect conv
-
-    sharks =
+    items =
       Wildthings.list_sharks()
       |> Enum.filter(fn s -> Shark.match_shark?(id, s.id) end)
+      |> Enum.map(&shark_item/1)
       |> Enum.join
 
-    IO.inspect sharks
-    #shark = Wildthings.get_shark(id)
-    #%{conv | status: 200, resp_body: sharks}#"<h1>Shark #{shark.id}: #{shark.name}</h1>"}
+    %{conv | status: 200, resp_body: items}
   end
 
 end

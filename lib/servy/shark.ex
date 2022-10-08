@@ -10,7 +10,7 @@ defmodule Servy.Shark do
     end
 
     def match_shark?(id1, id2) when is_integer(id1) do
-      id1 != id2
+      id1 !== id2
     end
 
     def match_shark?(id1, id2) when is_binary(id1) do
