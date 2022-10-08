@@ -1,4 +1,4 @@
 <h1>Show Shark</h1>
 <p>
-Is Name sleeping? <strong>true/false</strong>
+Is <%= shark.name %> sleeping? <strong><%= shark.sleeping %></strong>
 </p>

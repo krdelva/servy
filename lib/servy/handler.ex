@@ -39,11 +39,7 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{method: "DELETE", path: "/sharks/" <> id} = conv) do
-    # IO.puts "DELETE ROUTE"
     params = Map.put(conv.params, "id", id)
-    IO.puts "--------"
-    IO.inspect params
-    IO.puts "-------"
     SharkController.delete(conv, params)
   end
 
