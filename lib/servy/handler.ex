@@ -33,6 +33,15 @@ defmodule Servy.Handler do
     SharkController.index(conv)
   end
 
+  def route(%Conv{method: "GET", path: "/api/sharks"} = conv) do
+    Servy.Api.SharkController.index(conv)
+  end
+  def route(%Conv{method: "POST", path: "/api/sharks"} = conv) do
+    Servy.Api.SharkController.create(conv, conv.params)
+  end
+
+
+
   def route(%Conv{method: "GET", path: "/sharks/" <> id} = conv) do
     params = Map.put(conv.params, "id", id)
     SharkController.show(conv, params)
@@ -76,67 +85,17 @@ defmodule Servy.Handler do
 
   def format_response(%Conv{} = conv) do
     """
-    HTTP/1.1 #{Conv.full_status(conv)}
-    Content-Type: text/html
-    Content-Length: #{byte_size(conv.resp_body)}
-
+    HTTP/1.1 #{Conv.full_status(conv)}\r
+    Content-Type: #{conv.resp_content_type}\r
+    Content-Length: #{byte_size(conv.resp_body)}\r
+    \r
     #{conv.resp_body}
     """
   end
 end
 
-request = """
-GET /wildthings HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-IO.puts(Servy.Handler.handle(request))
-
-request = """
-GET /wildlife HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-IO.puts(Servy.Handler.handle(request))
-
-request = """
-GET /sharks HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-IO.puts(Servy.Handler.handle(request))
-
-request = """
-GET /sharks/1 HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-IO.puts(Servy.Handler.handle(request))
-
-request = """
-GET /about HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-IO.puts(Servy.Handler.handle(request))
-
 # request = """
-# GET /sharks/new HTTP/1.1
+# GET /wildthings HTTP/1.1
 # Host: example.com
 # User-Agent: ExampleBrowser/1.0
 # Accept: */*
@@ -145,26 +104,76 @@ IO.puts(Servy.Handler.handle(request))
 
 # IO.puts(Servy.Handler.handle(request))
 
-request = """
-POST /sharks HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-Content-Type: application/x-www-form-urlenconded
-Content-Length: 21
+# request = """
+# GET /wildlife HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
 
-name=Cat&type=Calm
-"""
+# """
 
-IO.puts(Servy.Handler.handle(request))
+# IO.puts(Servy.Handler.handle(request))
 
-request = """
-DELETE /sharks/1 HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
+# request = """
+# GET /sharks HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
 
-id=1
-"""
+# """
 
-IO.puts(Servy.Handler.handle(request))
+# IO.puts(Servy.Handler.handle(request))
+
+# request = """
+# GET /sharks/1 HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
+
+# """
+
+# IO.puts(Servy.Handler.handle(request))
+
+# request = """
+# GET /about HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
+
+# """
+
+# IO.puts(Servy.Handler.handle(request))
+
+# # request = """
+# # GET /sharks/new HTTP/1.1
+# # Host: example.com
+# # User-Agent: ExampleBrowser/1.0
+# # Accept: */*
+
+# # """
+
+# # IO.puts(Servy.Handler.handle(request))
+
+# request = """
+# POST /sharks HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
+# Content-Type: application/x-www-form-urlenconded
+# Content-Length: 21
+
+# name=Cat&type=Calm
+# """
+
+# IO.puts(Servy.Handler.handle(request))
+
+# request = """
+# DELETE /sharks/1 HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
+
+# id=1
+# """
+
+# IO.puts(Servy.Handler.handle(request))

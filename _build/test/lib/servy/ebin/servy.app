@@ -1,0 +1,11 @@
+{application,servy,
+             [{applications,[kernel,stdlib,elixir,logger,eex,poison]},
+              {description,"servy"},
+              {modules,['Elixir.Servy','Elixir.Servy.Api.SharkController',
+                        'Elixir.Servy.Conv','Elixir.Servy.FileHandler',
+                        'Elixir.Servy.Handler','Elixir.Servy.Parser',
+                        'Elixir.Servy.Plugins','Elixir.Servy.Shark',
+                        'Elixir.Servy.SharkController',
+                        'Elixir.Servy.Wildthings']},
+              {registered,[]},
+              {vsn,"0.1.0"}]}.
