@@ -7,7 +7,7 @@ defmodule Servy.HttpServer do
 
     # Creates a socket to listen for client connections.
     # `listen_socket` is bound to the listening socket.
-    {:ok, listen_socket} = 
+    {:ok, listen_socket} =
       :gen_tcp.listen(port, [:binary, packet: :raw, active: false, reuseaddr: true])
 
     # Socket options (don't worry about these details):
@@ -27,24 +27,25 @@ defmodule Servy.HttpServer do
   def accept_loop(listen_socket) do
     IO.puts "⌛️  Waiting to accept a client connection...\n"
 
-    # Suspends (blocks) and waits for a client connection. When a connection 
+    # Suspends (blocks) and waits for a client connection. When a connection
     # is accepted, `client_socket` is bound to a new client socket.
     {:ok, client_socket} = :gen_tcp.accept(listen_socket)
 
     IO.puts "⚡️  Connection accepted!\n"
 
     # Receives the request and sends a response over the client socket.
-    serve(client_socket)
+    spawn(fn -> serve(client_socket) end)
 
     # Loop back to wait and accept the next connection.
     accept_loop(listen_socket)
   end
 
   @doc """
-  Receives the request on the `client_socket` and 
+  Receives the request on the `client_socket` and
   sends a response back over the same socket.
   """
   def serve(client_socket) do
+    IO.puts "#{inspect self()} : Working on it!"
     client_socket
     |> read_request
     |> Servy.Handler.handle

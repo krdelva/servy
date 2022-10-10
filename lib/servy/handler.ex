@@ -22,6 +22,10 @@ defmodule Servy.Handler do
   end
 
 
+  def route(%Conv{ method: "GET", path: "/kaboom"} = _conv) do
+    raise "Kaboom!"
+  end
+
   def route(%Conv{ method: "GET", path: "/hibernate/" <> time} = conv) do
     time |> String.to_integer |> :timer.sleep()
 
