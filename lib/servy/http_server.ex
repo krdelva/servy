@@ -1,27 +1,4 @@
-#server() ->
-  # {ok, LSock} = gen_tcp:listen(5678, [binary, {packet, 0},
-  #                                     {active, false}]),
-  # {ok, Sock} = gen_tcp:accept(LSock),
-  # {ok, Bin} = do_recv(Sock, []),
-  # ok = gen_tcp:close(Sock),
-  # ok = gen_tcp:close(LSock),
-  # Bin.
-
 defmodule Servy.HttpServer do
-  def server do
-    {:ok, lsock} = :gen_tcp.listen(5678, [:binary, packet: 0,  active: false])
-    {:ok, sock} = :gen_tcp.accept(lsock)
-    {:ok, bin} = :gen_tcp.recv(sock, 0)
-    :ok = :gen_tcp.close(sock)
-    :ok = :gen_tcp.close(lsock)
-    bin
-  end
-
-
-  """
-  COPIED CODE BELOW!
-  """
-
 
   @doc """
   Starts the server on the given `port` of localhost.
@@ -30,7 +7,7 @@ defmodule Servy.HttpServer do
 
     # Creates a socket to listen for client connections.
     # `listen_socket` is bound to the listening socket.
-    {:ok, listen_socket} =
+    {:ok, listen_socket} = 
       :gen_tcp.listen(port, [:binary, packet: :raw, active: false, reuseaddr: true])
 
     # Socket options (don't worry about these details):
@@ -50,7 +27,7 @@ defmodule Servy.HttpServer do
   def accept_loop(listen_socket) do
     IO.puts "⌛️  Waiting to accept a client connection...\n"
 
-    # Suspends (blocks) and waits for a client connection. When a connection
+    # Suspends (blocks) and waits for a client connection. When a connection 
     # is accepted, `client_socket` is bound to a new client socket.
     {:ok, client_socket} = :gen_tcp.accept(listen_socket)
 
@@ -64,14 +41,13 @@ defmodule Servy.HttpServer do
   end
 
   @doc """
-  Receives the request on the `client_socket` and
+  Receives the request on the `client_socket` and 
   sends a response back over the same socket.
   """
   def serve(client_socket) do
     client_socket
     |> read_request
     |> Servy.Handler.handle
-    #|> generate_response
     |> write_response(client_socket)
   end
 
@@ -113,7 +89,5 @@ defmodule Servy.HttpServer do
     # Does not close the listen socket!
     :gen_tcp.close(client_socket)
   end
-
-
 
 end

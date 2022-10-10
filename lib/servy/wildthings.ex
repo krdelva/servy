@@ -1,32 +1,27 @@
 defmodule Servy.Wildthings do
-  alias Servy.Shark
+  alias Servy.Bear
 
-  def list_sharks do
+  def list_bears do
     [
-      %Shark{id: 1, name: "Bob", type: "Great White"},
-      %Shark{id: 2, name: "Paul", type: "Tiger"},
-      %Shark{id: 3, name: "Sheila", type: "Cat", sleeping: true},
-      %Shark{id: 4, name: "Angela", type: "Tiger"},
-      %Shark{id: 5, name: "Robin", type: "Great White", sleeping: true},
-      %Shark{id: 6, name: "Cookie", type: "Cat"},
-      %Shark{id: 7, name: "Erik", type: "Tiger", sleeping: true},
+      %Bear{id: 1, name: "Teddy", type: "Brown", hibernating: true},
+      %Bear{id: 2, name: "Smokey", type: "Black"},
+      %Bear{id: 3, name: "Paddington", type: "Brown"},
+      %Bear{id: 4, name: "Scarface", type: "Grizzly", hibernating: true},
+      %Bear{id: 5, name: "Snow", type: "Polar"},      
+      %Bear{id: 6, name: "Brutus", type: "Grizzly"},
+      %Bear{id: 7, name: "Rosie", type: "Black", hibernating: true},
+      %Bear{id: 8, name: "Roscoe", type: "Panda"},
+      %Bear{id: 9, name: "Iceman", type: "Polar", hibernating: true},
+      %Bear{id: 10, name: "Kenai", type: "Grizzly"}
     ]
   end
 
-  def get_shark(id) when is_integer(id) do
-    Enum.find(list_sharks(), &(&1.id == id))
+  def get_bear(id) when is_integer(id) do
+    Enum.find(list_bears(), fn(b) -> b.id == id end)
   end
 
-  def get_shark(id) when is_binary(id) do
-    id |> String.to_integer() |> get_shark
-  end
-
-  def match_shark?(id1, id2) when is_integer(id1) do
-    id1 != id2
-  end
-
-  def match_shark?(id1, id2) when is_binary(id1) do
-    id1 |> String.to_integer() |> match_shark?(id2)
+  def get_bear(id) when is_binary(id) do
+    id |> String.to_integer |> get_bear
   end
 
 end

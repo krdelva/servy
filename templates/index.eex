@@ -1,7 +1,7 @@
-<h1>All The Sharks!</h1>
+<h1>All The Bears!</h1>
 
 <ul>
-    <%= for shark <- sharks do %>
-        <li> <%= shark.name %> - <%= shark.type %></li>
-    <% end%>
+  <%= for bear <- bears do %>
+    <li><%= bear.name %> - <%= bear.type %></li>
+  <% end %>
 </ul>
