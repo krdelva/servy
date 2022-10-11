@@ -1,5 +1,7 @@
 # Servy
 
+Author: Kevin Delva, as per instructions of the course
+
 **TODO: Add description**
 
 ## Installation
