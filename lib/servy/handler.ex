@@ -4,6 +4,8 @@ defmodule Servy.Handler do
 
   alias Servy.Conv
   alias Servy.BearController
+  alias Servy.VideoCam
+  alias Servy.Fetcher
 
   @pages_path Path.expand("../../pages", __DIR__)
 
@@ -21,6 +23,20 @@ defmodule Servy.Handler do
     |> format_response
   end
 
+
+  def route(%Conv{ method: "GET", path: "/snapshots" } = conv) do
+    Fetcher.async("cam-1")
+    Fetcher.async("cam-2")
+    Fetcher.async("cam-3")
+
+    snapshot1 = Fetcher.get_result()
+    snapshot2 = Fetcher.get_result()
+    snapshot3 = Fetcher.get_result()
+
+    snapshots = [snapshot1, snapshot2, snapshot3]
+
+    %{ conv | status: 200, resp_body: inspect snapshots }
+  end
 
   def route(%Conv{ method: "GET", path: "/kaboom"} = _conv) do
     raise "Kaboom!"
