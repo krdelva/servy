@@ -35,6 +35,7 @@ defmodule Servy.Handler do
 
     where_is_bigfoot = Task.await(task)
 
+    render(conv, "sensors.eex", snapshots: snapshots, location: where_is_bigfoot)
     %{ conv | status: 200, resp_body: inspect {snapshots, where_is_bigfoot} }
   end
 
