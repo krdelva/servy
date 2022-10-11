@@ -49,6 +49,7 @@ defmodule Servy.PledgeServer do
         listen_loop(state)
       {sender, :total_pledged} ->
         send sender, {:response, 500}
+        listen_loop(state)
     end
 
   end
