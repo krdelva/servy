@@ -1,7 +1,8 @@
 defmodule Servy.VideoCam do
 
   def get_snapshot(filename) do
-    filename <> "-snapshot.jpg"
+    :timer.sleep(1000)
+    filename <> "-extension.jpg"
   end
 
 
