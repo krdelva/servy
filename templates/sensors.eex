@@ -8,4 +8,4 @@
 </ul>
 
 <h2>Where is Bigfoot?</h2>
-<%= Inspect location %>
+<%= inspect location %>
