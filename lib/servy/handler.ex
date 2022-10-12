@@ -85,6 +85,7 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{ path: path } = conv) do
+    #format_response(%{ conv | status: 404, resp_body: "No #{path} here!"})
     %{ conv | status: 404, resp_body: "No #{path} here!"}
   end
 

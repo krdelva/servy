@@ -1,12 +1,12 @@
 defmodule Servy.FourOhFourCounter do
 
-  @name :four_oh_four_counter
-
+  #@name :four_oh_four_counter
+  @name __MODULE__
   # Client Interface
 
   def start do
     IO.puts "Starting the 404 counter..."
-    pid = spawn(__MODULE__, :listen_loop, [%{}])
+    pid = spawn(@name, :listen_loop, [%{}])
     Process.register(pid, @name)
     pid
   end
