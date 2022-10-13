@@ -6,7 +6,7 @@
         <input type="text" name="name">
     </p>
     <p>
-        Amount:
+        Amount:<br/>
         <input type="text" name="amount">
     </p>
     <p>
