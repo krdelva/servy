@@ -1,85 +1,97 @@
+defmodule Servy.GenericServer do
+
+
+  def start(callback_module, initial_state, name) do
+    pid = spawn(__MODULE__, :listen_loop, [initial_state, callback_module])
+    Process.register(pid, name)
+    pid
+  end
+
+
+  # Helper Functions
+  def call(pid, message) do
+    send pid, {:call, self(), message}
+
+    receive do {:response, response} -> response end
+  end
+
+  def cast(pid, message) do
+    send pid, {:cast, message}
+  end
+
+
+  def listen_loop(state, callback_module) do
+    IO.puts "\nWaiting for a message..."
+
+    receive do
+
+      {:call, sender, message} when is_pid(sender) ->
+        {response, new_state} = callback_module.handle_call(message, state)
+        send sender, {:response, response}
+        listen_loop(new_state, callback_module)
+      {:cast, message} ->
+        new_state = callback_module.handle_cast(message, state)
+        listen_loop(new_state, callback_module)
+      unexpected ->
+        IO.puts "Unexpected message #{inspect unexpected}"
+        listen_loop(state, callback_module)
+    end
+
+  end
+
+
+
+
+end
+
+
+
 defmodule Servy.PledgeServer do
 
 
   #@process_name :pledge_server
   @process_name __MODULE__
 
+  alias Servy.GenericServer
+
+
   # Client Interface
 
-  def start do
+  def start() do
     IO.puts "Starting pledge server"
-
-    pid = spawn(@process_name, :listen_loop, [[]])
-    Process.register(pid, @process_name)
-    pid
+    GenericServer.start(__MODULE__, [], @process_name)
   end
 
   def create_pledge(name, amount) do
-    call @process_name, {:create_pledge, name, amount}
+    GenericServer.call @process_name, {:create_pledge, name, amount}
 
     #receive do {:response, status} -> status end
   end
 
   def recent_pledges do
-    call @process_name, :recent_pledges
+    GenericServer.call @process_name, :recent_pledges
 
     #receive do {:response, pledges} -> pledges end
   end
 
   def total_pledged do
-    call @process_name, :total_pledged
+    GenericServer.call @process_name, :total_pledged
 
     #receive do {:response, total} -> total end
   end
 
   def clear do
-    cast @process_name, :clear
+    GenericServer.cast @process_name, :clear
   end
 
-  # Helper Functions
-  def call(pid, message) do
-    send pid, {self(), message}
 
-    receive do {:response, response} -> response end
+
+  # Server Callbacks
+
+  def handle_cast(:clear, _state) do
+    []
   end
 
-  def cast(pid, message) do
-    send pid, message
-  end
-
-  # Server
-
-  def listen_loop(state \\ []) do
-    IO.puts "\nWaiting for a message..."
-
-    receive do
-
-      {sender, message} when is_pid(sender) ->
-        {response, new_state} = handle_call(message, state)
-        send sender, {:response, response}
-        listen_loop(new_state)
-      :clear ->
-        new_state = []
-        listen_loop(new_state)
-      # {sender, {:create_pledge, name, amount}} ->
-      #   {:ok, id} = send_pledge_to_service(name, amount)
-      #   most_recent_pledges = Enum.take(state, 2)
-      #   new_state = [ {name, amount} | most_recent_pledges ]
-      #   send sender, {:response, id}
-      #   listen_loop(new_state)
-      # {sender, :recent_pledges} ->
-      #   send sender, {:response, state}
-      #   listen_loop(state)
-      # {sender, :total_pledged} ->
-      #   total = Enum.map(state, &elem(&1, 1)) |> Enum.sum
-      #   send sender, {:response, total}
-      #   listen_loop(state)
-      unexpected ->
-        IO.puts "Unexpected message #{inspect unexpected}"
-        listen_loop(state)
-    end
-
-  end
 
   def handle_call(:total_pledged, state) do
     total = Enum.map(state, &elem(&1, 1)) |> Enum.sum
@@ -105,20 +117,24 @@ defmodule Servy.PledgeServer do
 
 end
 
-# alias Servy.PledgeServer
+alias Servy.PledgeServer
 
-# pid = PledgeServer.start()
+pid = PledgeServer.start()
 
-# send pid, {:stop, "hammertime"}
+send pid, {:stop, "hammertime"}
 
-# IO.inspect PledgeServer.create_pledge("larry", 10)
-# IO.inspect PledgeServer.create_pledge("moe", 20)
-# IO.inspect PledgeServer.create_pledge("curly", 30)
-# IO.inspect PledgeServer.create_pledge("daisy", 40)
-# IO.inspect PledgeServer.create_pledge("grace", 50)
+IO.inspect PledgeServer.create_pledge("larry", 10)
+IO.inspect PledgeServer.create_pledge("moe", 20)
+IO.inspect PledgeServer.create_pledge("curly", 30)
 
-# IO.inspect PledgeServer.recent_pledges()
+PledgeServer.clear()
 
-# IO.inspect PledgeServer.total_pledged
+IO.inspect PledgeServer.create_pledge("daisy", 40)
+IO.inspect PledgeServer.create_pledge("grace", 50)
 
-# IO.inspect Process.info(pid, :messages)
+
+IO.inspect PledgeServer.recent_pledges()
+
+IO.inspect PledgeServer.total_pledged
+
+IO.inspect Process.info(pid, :messages)
