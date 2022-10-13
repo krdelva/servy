@@ -1,4 +1,5 @@
 defmodule Servy.View do
+
   @templates_path Path.expand("../../templates", __DIR__)
 
   def render(conv, template, bindings \\ []) do
